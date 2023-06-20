@@ -1,6 +1,6 @@
-name: Build
+name: Release
 on:
-  pull_request:
+  push:
     branches: [main]
 jobs:
   build:
@@ -26,3 +26,9 @@ jobs:
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           MAIL_SUBJECT: ${{ secrets.MAIL_SUBJECT }}
       - run: npm run build
+      - uses: unfor19/install-aws-cli-action@v1
+      - run: npm run release
+        env:
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}

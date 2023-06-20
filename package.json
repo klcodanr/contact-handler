@@ -1,0 +1,29 @@
+{
+  "name": "contact",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "init": "mkdir -p dist",
+    "test": "c8 mocha",
+    "build": "lambda-zipper build -f src -o dist/function.zip",
+    "deploy": "aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://dist/function.zip",
+    "configure": "aws lambda update-function-configuration --function-name ${FUNCTION_NAME} --environment \"Variables={ALLOWED_FIELDS=$ALLOWED_FIELDS,REQUIRED_FIELDS=$REQUIRED_FIELDS,HONEYPOT=$HONEYPOT,MAIL_TO=$MAIL_TO,MAIL_FROM=$MAIL_FROM,MAIL_SUBJECT=$MAIL_SUBJECT,SMTP_HOST=$SMTP_HOST,SMTP_PORT=$SMTP_PORT,SMTP_SECURITY=$SMTP_SECURITY,SMTP_USERNAME=$SMTP_USERNAME,SMTP_PASSWORD=$SMTP_PASSWORD}\""
+  },
+  "author": "Dan Klco",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "nodemailer": "^6.8.0",
+    "yaml": "^2.3.1"
+  },
+  "devDependencies": {
+    "@adobe/eslint-config-helix": "^2.0.2",
+    "dotenv": "^16.0.3",
+    "eslint": "^8.43.0",
+    "lambda-zipper": "^1.0.0",
+    "c8": "^8.0.0",
+    "mocha": "^10.2.0"
+  }
+}

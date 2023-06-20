@@ -20,10 +20,9 @@ export class ProblemError extends Error {
   /**
    * Sends the provided error to the response
    * @param {*} err any error-ish object
-   * @param {Object} additionalHeaders additional headers
    * @returns {Object} a Problem response to return from Lambda
    */
-  static toResponse(err, additionalHeaders) {
+  static toResponse(err) {
     return {
       statusCode: err.status || 500,
       body: JSON.stringify({
@@ -32,7 +31,6 @@ export class ProblemError extends Error {
         detail: err.detail || err.message,
       }),
       headers: {
-        ...additionalHeaders,
         'Content-Type': 'application+problem/json',
       },
     };

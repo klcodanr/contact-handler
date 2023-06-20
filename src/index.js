@@ -15,11 +15,6 @@ import nodemailer from 'nodemailer';
 import { stringify } from 'yaml';
 import { ProblemError } from './problem.js';
 
-export const COMMON_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST',
-};
-
 function generatePayload(event, data) {
   const sourceIp = event.requestContext?.http?.sourceIp;
   const userAgent = event.requestContext?.http?.userAgent;
@@ -82,11 +77,10 @@ export async function handler(event) {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
-        ...COMMON_HEADERS,
       },
     };
   } catch (err) {
     console.error('Failed to send due to error', err);
-    return ProblemError.toResponse(err, COMMON_HEADERS);
+    return ProblemError.toResponse(err);
   }
 }

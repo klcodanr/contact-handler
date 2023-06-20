@@ -5,7 +5,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: Test
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js 18
@@ -14,4 +13,16 @@ jobs:
           node-version: 18.x
       - run: npm ci
       - run: npm test
+        env:
+          REQUIRED_FIELDS: ${{ secrets.REQUIRED_FIELDS }}
+          ALLOWED_FIELDS: ${{ secrets.ALLOWED_FIELDS }}
+          HONEYPOT: ${{ secrets.HONEYPOT }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_SUBJECT: ${{ secrets.MAIL_SUBJECT }}
       - run: npm run build

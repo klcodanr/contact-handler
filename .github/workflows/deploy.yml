@@ -1,4 +1,4 @@
-name: Release
+name: Deploy
 on:
   push:
     branches: [main]
@@ -27,7 +27,7 @@ jobs:
           MAIL_SUBJECT: ${{ secrets.MAIL_SUBJECT }}
       - run: npm run build
       - uses: unfor19/install-aws-cli-action@v1
-      - run: npm run release
+      - run: npm run deploy
         env:
           AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

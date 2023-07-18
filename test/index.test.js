@@ -14,6 +14,11 @@ import dotenv from 'dotenv';
 
 import { handler } from '../src/index.js';
 
+import { mockClient } from 'aws-sdk-client-mock';
+import { SESClient } from '@aws-sdk/client-ses';
+
+const mockSesClient = mockClient(SESClient);
+
 dotenv.config();
 
 process.env.HONEYPOT = 'test-honeypot';
@@ -22,6 +27,8 @@ process.env.ALLOWED_FIELDS = 'name,subject,message';
 
 /* eslint-env mocha */
 describe('Index Tests', () => {
+  beforeEach(() => mockSesClient.reset());
+
   it('will fail with 405 without method', async () => {
     const res = await handler({});
     assert.strictEqual(res.statusCode, 405);
@@ -54,12 +61,12 @@ describe('Index Tests', () => {
       requestContext: { http: { method: 'POST' } },
     });
     assert.strictEqual(res.statusCode, 200);
-  }).timeout(100);
+  });
 
-  it('can send email', async () => {
-    const password = process.env.SMTP_PASSWORD;
-    process.env.SMTP_PASSWORD = 'notvalid';
+  it('can handle send failure', async () => {
+    mockSesClient.rejects('BAD NEWS BEARS');
     const res = await handler({
+      SES_CLIENT: mockSesClient,
       queryStringParameters: {
         subject: 'test subject',
         message: 'test message',
@@ -67,14 +74,11 @@ describe('Index Tests', () => {
       requestContext: { http: { method: 'POST' } },
     });
     assert.strictEqual(res.statusCode, 500);
-    process.env.SMTP_PASSWORD = password;
-  }).timeout(60000);
+  });
 
-  it('can send email', async function () {
-    if (!process.env.SMTP_PASSWORD) {
-      this.skip();
-    }
+  it('can send email', async () => {
     const res = await handler({
+      SES_CLIENT: mockSesClient,
       queryStringParameters: {
         subject: 'test subject',
         message: 'test message',
@@ -82,5 +86,5 @@ describe('Index Tests', () => {
       requestContext: { http: { method: 'POST' } },
     });
     assert.strictEqual(res.statusCode, 200);
-  }).timeout(60000);
+  });
 });

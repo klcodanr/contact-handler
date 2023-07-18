@@ -2,7 +2,7 @@
 
 # Lambda Contact Handler
 
-A simple Lambda function to handle contact form requests, sending an Email via SMTP.
+A simple Lambda function to handle contact form requests, sending an Email via SES.
 
 ## Configuration
 
@@ -14,9 +14,4 @@ This Function requires the following environment variables:
  - MAIL_TO - the email recipent
  - MAIL_FROM - the email sender
  - MAIL_SUBJECT - the subject of the email to be sent
- - SMTP_HOST - the host for the SMTP server
- - SMTP_PORT - the port of the SMTP server
- - SMTP_SECURITY - whether or not to enable security
- - SMTP_USERNAME - the username with which to connect to the SMTP server
- - SMTP_PASSWORD - the password with which to connect to the SMTP server
 

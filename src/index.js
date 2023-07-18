@@ -11,7 +11,7 @@
  */
 
 /* eslint-disable no-console */
-import nodemailer from 'nodemailer';
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { stringify } from 'yaml';
 import { ProblemError } from './problem.js';
 
@@ -42,25 +42,25 @@ async function sendEmail(event) {
   const honeypot = process.env.HONEYPOT;
   if (!data[honeypot]) {
     const payload = generatePayload(event, data);
-    const message = {
-      to: process.env.MAIL_TO,
-      from: process.env.MAIL_FROM,
-      subject: process.env.MAIL_SUBJECT,
-      text: stringify(payload),
-    };
-    console.debug('Sending message', message);
+    console.debug('Sending message', payload);
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: JSON.parse(process.env.SMTP_PORT),
-      secure: JSON.parse(process.env.SMTP_SECURE),
-      auth: {
-        user: process.env.SMTP_USERNAME,
-        pass: process.env.SMTP_PASSWORD,
+    const command = new SendEmailCommand({
+      Destination: {
+        ToAddresses: [process.env.MAIL_TO],
       },
+      Message: {
+        Body: {
+          Text: { Data: stringify(payload) },
+        },
+
+        Subject: { Data: process.env.MAIL_SUBJECT },
+      },
+      Source: process.env.MAIL_FROM,
     });
-    await transporter.sendMail(message);
-    console.info('Message sent', message);
+
+    const ses = event.SES_CLIENT || new SESClient();
+    const response = await ses.send(command);
+    console.info('Message sent', { response, payload });
   } else {
     console.warn('Event caught in honeypot', event);
   }
